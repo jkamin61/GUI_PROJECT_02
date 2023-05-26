@@ -1,5 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class S29352 {
     private JFrame frame;
@@ -9,7 +11,14 @@ public class S29352 {
     private JButton buttonEdit;
     private JButton buttonDelete;
     private JLabel welcomeLabel;
-    private DefaultListModel<String> listModel;
+    private DefaultListModel<String> listModelDepartment;
+    private DefaultListModel<String> listModelEmployee;
+    private DefaultListModel<String> listModelUser;
+    private DefaultListModel<String> listModelSupervisor;
+    private DefaultListModel<String> listModelBrigade;
+    private DefaultListModel<String> listModelOrder;
+    private DefaultListModel<String> listModelWork;
+    private List<String> objects;
     private JList<String> listData;
     private JScrollPane scrollPane;
     private boolean loggedIn;
@@ -20,8 +29,9 @@ public class S29352 {
     private JButton buttonBrigade;
     private JButton buttonOrder;
     private JButton buttonWork;
+    private JButton buttonCompleteOrder;
+    private JButton buttonEmployeeList;
     private boolean isBrygadzista;
-    private java.util.List<String> objects;
 
     public S29352() {
         initialize();
@@ -35,7 +45,8 @@ public class S29352 {
 
         createTopPanel();
         createSidePanel();
-        createList();
+        createLists();
+        createAdditionalButtons();
 
         frame.add(topPanel, BorderLayout.NORTH);
         frame.add(leftPanel, BorderLayout.WEST);
@@ -44,8 +55,11 @@ public class S29352 {
         loggedIn = false;
         isBrygadzista = false;
 
-        objects = new java.util.ArrayList<>();
+        objects = new ArrayList<>();
         frame.setVisible(true);
+
+        buttonCompleteOrder.setEnabled(false);
+        buttonCompleteOrder.setVisible(false);
     }
 
     private void createTopPanel() {
@@ -101,13 +115,13 @@ public class S29352 {
         buttonOrder = new JButton("Zlecenie");
         buttonWork = new JButton("Praca");
 
-        buttonEmployee.addActionListener(e -> showEmployeeDetails());
-        buttonUser.addActionListener(e -> showUserDetails());
-        buttonSupervisor.addActionListener(e -> showSupervisorDetails());
-        buttonBrigade.addActionListener(e -> showBrigadeDetails());
-        buttonOrder.addActionListener(e -> showOrderDetails());
-        buttonWork.addActionListener(e -> showWorkDetails());
-        buttonDepartment.addActionListener(e -> showDepartmentDetails());
+        buttonDepartment.addActionListener(e -> showDepartmentList());
+        buttonEmployee.addActionListener(e -> showEmployeeList());
+        buttonUser.addActionListener(e -> showUserList());
+        buttonSupervisor.addActionListener(e -> showSupervisorList());
+        buttonBrigade.addActionListener(e -> showBrigadeList());
+        buttonOrder.addActionListener(e -> showOrderList());
+        buttonWork.addActionListener(e -> showWorkList());
 
         leftPanel.add(buttonDepartment);
         leftPanel.add(buttonEmployee);
@@ -136,11 +150,70 @@ public class S29352 {
         }
     }
 
-    private void createList() {
-        listModel = new DefaultListModel<>();
-        listData = new JList<>(listModel);
+    private void createLists() {
+        listModelDepartment = new DefaultListModel<>();
+        listModelEmployee = new DefaultListModel<>();
+        listModelUser = new DefaultListModel<>();
+        listModelSupervisor = new DefaultListModel<>();
+        listModelBrigade = new DefaultListModel<>();
+        listModelOrder = new DefaultListModel<>();
+        listModelWork = new DefaultListModel<>();
+
+        listData = new JList<>(listModelDepartment);
+        listData.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listData.addListSelectionListener(e -> updateButtonStates());
+
         scrollPane = new JScrollPane(listData);
-        scrollPane.setPreferredSize(new Dimension(400, 400));
+    }
+
+    private void createAdditionalButtons() {
+        buttonCompleteOrder = new JButton("Zakończ zlecenie");
+        buttonCompleteOrder.addActionListener(e -> completeOrder());
+        buttonCompleteOrder.setEnabled(false);
+
+        buttonEmployeeList = new JButton("Lista pracowników");
+        buttonEmployeeList.addActionListener(e -> showEmployeeList());
+        buttonEmployeeList.setEnabled(false);
+        buttonEmployeeList.setVisible(false);
+
+        JPanel leftPanel = (JPanel) topPanel.getComponent(0);
+        leftPanel.add(buttonCompleteOrder);
+        leftPanel.add(buttonEmployeeList);
+    }
+
+    private void completeOrder() {
+        int selectedIndex = listData.getSelectedIndex();
+        if (selectedIndex != -1) {
+            String selectedOrder = listData.getSelectedValue();
+            showMessage("Zlecenie zakończone: " + selectedOrder);
+            listModelOrder.remove(selectedIndex);
+            objects.remove(selectedIndex);
+        }
+    }
+
+    private void updateButtonStates() {
+        boolean listItemSelected = listData.getSelectedIndex() != -1;
+        boolean isOrderView = listData.getModel() == listModelOrder;
+        boolean isDepartmentView = listData.getModel() == listModelDepartment;
+
+        buttonCreate.setEnabled(loggedIn);
+        buttonEdit.setEnabled(loggedIn && listItemSelected);
+        buttonDelete.setEnabled(loggedIn && listItemSelected);
+        buttonCompleteOrder.setEnabled(loggedIn && listData.getModel() == listModelOrder && listItemSelected);
+        buttonEmployeeList.setEnabled(loggedIn && listData.getModel() == listModelDepartment && listItemSelected);
+
+        if (isOrderView) {
+            buttonCompleteOrder.setEnabled(loggedIn && listItemSelected);
+            buttonCompleteOrder.setVisible(true);
+        } else {
+            buttonCompleteOrder.setVisible(false);
+        }
+        if (isDepartmentView) {
+            buttonEmployeeList.setEnabled(loggedIn && listItemSelected);
+            buttonEmployeeList.setVisible(true);
+        } else {
+            buttonEmployeeList.setVisible(false);
+        }
     }
 
     private void showLoginDialog() {
@@ -152,6 +225,27 @@ public class S29352 {
             updateUI();
             showMessage("Zalogowano jako: " + username);
             welcomeLabel.setText("Witaj " + getInitials(username));
+            if (isBrygadzista) {
+                listModelDepartment.addElement("Dział Pracowników: Programiści, Sprzedaż");
+                listModelEmployee.addElement("Pracownik: Jan Kowalski, Stanowisko: Programista Frontend, Dział: Programiści");
+                listModelEmployee.addElement("Pracownik: Janusz Maj, Stanowisko: Programista Backend, Dział: Programiści");
+                listModelEmployee.addElement("Pracownik: Konrad Mat, Stanowisko: Programista Fullstack, Dział: Programiści");
+                listModelUser.addElement("Użytkownik: admin, Hasło: admin, Dział: Programiści");
+                listModelSupervisor.addElement("Brygadzista: admin, Dział: Programiści");
+                listModelOrder.addElement("Zlecenie numer: 1, Praca: Mobile-app, Brygadzista: admin, Działy pracowników: Programiści, Sprzedaż");
+                if (listModelOrder != null) {
+                    showMessage("Zaległe zlecenia: " + listModelOrder.size());
+                    showOrderList();
+                }
+                objects.add("Zlecenie numer: 1");
+            } else {
+                listModelDepartment.addElement("Dział Pracowników: Sprzedaż");
+                listModelEmployee.addElement("Pracownik: Jan Kowalski, Stanowisko: Sprzedawca, Dział: Sprzedaż");
+                listModelUser.addElement("Użytkownik: user, Hasło: user, Dział: Sprzedaż");
+                listModelSupervisor.addElement("Brygadzista: user, Dział: Sprzedaż");
+                listModelOrder.addElement("Zlecenie numer: 1, Praca: Mobile-app, Brygadzista: user, Działy pracowników: Sprzedaż");
+                objects.add("Zlecenie numer: 1");
+            }
         } else {
             showMessage("Błędne dane logowania.");
             System.exit(0);
@@ -170,9 +264,21 @@ public class S29352 {
         }
     }
 
+    private void clearLists() {
+        listModelDepartment.clear();
+        listModelEmployee.clear();
+        listModelUser.clear();
+        listModelSupervisor.clear();
+        listModelBrigade.clear();
+        listModelOrder.clear();
+        listModelWork.clear();
+    }
+
     private void logout() {
         loggedIn = false;
+        isBrygadzista = false;
         updateUI();
+        clearLists();
         showMessage("Wylogowano.");
         welcomeLabel.setText("");
         showLoginDialog();
@@ -222,118 +328,106 @@ public class S29352 {
         return initials.toString();
     }
 
+    private void showDepartmentList() {
+        listData.setModel(listModelDepartment);
+        updateButtonStates();
+    }
+
+    private void showEmployeeList() {
+        listData.setModel(listModelEmployee);
+        updateButtonStates();
+    }
+
+    private void showUserList() {
+        listData.setModel(listModelUser);
+        updateButtonStates();
+    }
+
+    private void showSupervisorList() {
+        listData.setModel(listModelSupervisor);
+        updateButtonStates();
+    }
+
+    private void showBrigadeList() {
+        listData.setModel(listModelBrigade);
+        updateButtonStates();
+    }
+
+    private void showOrderList() {
+        listData.setModel(listModelOrder);
+        updateButtonStates();
+    }
+
+    private void showWorkList() {
+        listData.setModel(listModelWork);
+        updateButtonStates();
+    }
+
     private void createObject() {
-        if (loggedIn) {
-            String objectName = JOptionPane.showInputDialog(frame, "Podaj nazwę obiektu:");
-            if (objectName != null && !objectName.isEmpty()) {
-                objects.add(objectName);
-                listModel.addElement(objectName);
-                showMessage("Utworzono obiekt: " + objectName);
-            } else {
-                showMessage("Nie podano nazwy obiektu.");
+        String input = JOptionPane.showInputDialog(frame, "Podaj nazwę nowego działu:", "Utwórz dział", JOptionPane.PLAIN_MESSAGE);
+        if (input != null && !input.isEmpty()) {
+            DefaultListModel<String> currentListModel = getCurrentListModel();
+            if (currentListModel != null) {
+                currentListModel.addElement(input);
+                objects.add(input);
             }
-        } else {
-            showMessage("Musisz być zalogowany, aby utworzyć obiekt.");
         }
     }
 
+    private DefaultListModel<String> getCurrentListModel() {
+        if (listData.getModel() == listModelDepartment) {
+            return listModelDepartment;
+        } else if (listData.getModel() == listModelEmployee) {
+            return listModelEmployee;
+        } else if (listData.getModel() == listModelUser) {
+            return listModelUser;
+        } else if (listData.getModel() == listModelSupervisor) {
+            return listModelSupervisor;
+        } else if (listData.getModel() == listModelBrigade) {
+            return listModelBrigade;
+        } else if (listData.getModel() == listModelOrder) {
+            return listModelOrder;
+        } else if (listData.getModel() == listModelWork) {
+            return listModelWork;
+        }
+        return null;
+    }
+
     private void editObject() {
-        if (loggedIn) {
-            int selectedIndex = listData.getSelectedIndex();
-            if (selectedIndex != -1) {
-                String currentName = listData.getSelectedValue();
-                String newName = JOptionPane.showInputDialog(frame, "Edytuj nazwę obiektu:", currentName);
-                if (newName != null && !newName.isEmpty()) {
-                    objects.set(selectedIndex, newName);
-                    listModel.set(selectedIndex, newName);
-                    showMessage("Zaktualizowano obiekt: " + currentName + " -> " + newName);
+        int selectedIndex = listData.getSelectedIndex();
+        if (selectedIndex != -1) {
+            DefaultListModel<String> currentListModel = getCurrentListModel();
+            if (currentListModel != null) {
+                String currentValue = currentListModel.getElementAt(selectedIndex);
+                String newValue = JOptionPane.showInputDialog(frame, "Edytuj nazwę działu:", currentValue);
+                if (newValue != null && !newValue.isEmpty()) {
+                    currentListModel.setElementAt(newValue, selectedIndex);
+                    objects.set(selectedIndex, newValue);
                 }
-            } else {
-                showMessage("Wybierz obiekt do edycji.");
             }
-        } else {
-            showMessage("Musisz być zalogowany, aby edytować obiekt.");
         }
     }
 
     private void deleteObject() {
-        if (loggedIn) {
-            int selectedIndex = listData.getSelectedIndex();
-            if (selectedIndex != -1) {
-                String objectName = listData.getSelectedValue();
-                int option = JOptionPane.showConfirmDialog(frame, "Czy na pewno usunąć obiekt: " + objectName + "?");
-                if (option == JOptionPane.YES_OPTION) {
-                    objects.remove(selectedIndex);
-                    listModel.remove(selectedIndex);
-                    showMessage("Usunięto obiekt: " + objectName);
-                }
-            } else {
-                showMessage("Wybierz obiekt do usunięcia.");
+        int selectedIndex = listData.getSelectedIndex();
+        if (selectedIndex != -1) {
+            DefaultListModel<String> currentListModel = getCurrentListModel();
+            if (currentListModel != null) {
+                currentListModel.remove(selectedIndex);
+                objects.remove(selectedIndex);
             }
-        } else {
-            showMessage("Musisz być zalogowany, aby usunąć obiekt.");
         }
-    }
-
-    private void showDepartmentDetails() {
-//        JPanel departmentPanel = new JPanel();
-//        JTextField departmentNameField = new JTextField(20);
-//        JButton createButton = new JButton("Utwórz");
-//
-//        departmentPanel.add(new JLabel("Nazwa działu:"));
-//        departmentPanel.add(departmentNameField);
-//        departmentPanel.add(createButton);
-//
-//        createButton.addActionListener(e -> {
-//            String departmentName = departmentNameField.getText();
-//            if (!departmentName.isEmpty()) {
-//                listModel.addElement(departmentName);
-//                departmentNameField.setText("");
-//            } else {
-//                showMessage("Podaj nazwę działu.");
-//            }
-//        });
-//
-//        JOptionPane.showMessageDialog(frame, departmentPanel, "Dział Pracowników", JOptionPane.PLAIN_MESSAGE);
-        if (loggedIn) {
-            listModel.addElement("Przykładowy dział programistów");
-        } else {
-            showMessage("Musisz być zalogowany, aby zobaczyć działy.");
-        }
-    }
-
-    private void showEmployeeDetails() {
-        if (loggedIn) {
-            listModel.addElement("Przykładowe informacje pracownika");
-        } else {
-            showMessage("Musisz być zalogowany, aby zobaczyć działy.");
-        }
-    }
-
-    private void showUserDetails() {
-        showMessage("Użytkownik");
-    }
-
-    private void showSupervisorDetails() {
-        showMessage("Brygadzista");
-    }
-
-    private void showBrigadeDetails() {
-        showMessage("Brygada");
-    }
-
-    private void showOrderDetails() {
-        showMessage("Zlecenie");
-    }
-
-    private void showWorkDetails() {
-        showMessage("Praca");
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            S29352 app = new S29352();
-            app.showLoginDialog();
+        EventQueue.invokeLater(() -> {
+            try {
+                S29352 window = new S29352();
+                window.frame.setVisible(true);
+                window.showLoginDialog();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 }

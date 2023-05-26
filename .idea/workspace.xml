@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ff4220a3-0e66-45b5-81c0-a6c6d7d429bc" name="Changes" comment="-">
+    <list default="true" id="ff4220a3-0e66-45b5-81c0-a6c6d7d429bc" name="Changes" comment="- created interface, user auth and handling objects">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/S29352.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/S29352.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Zlecenie.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Zlecenie.java" afterDir="false" />
     </list>
@@ -33,14 +32,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/julek/IdeaProjects/GUI_PROJECT_02&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/julek/IdeaProjects/GUI_PROJECT_02"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\julek\IdeaProjects\GUI_PROJECT_02" />
@@ -102,7 +103,7 @@
       <updated>1684962432440</updated>
       <workItem from="1684962433676" duration="5064000" />
       <workItem from="1684967697079" duration="8000" />
-      <workItem from="1685044793309" duration="9198000" />
+      <workItem from="1685044793309" duration="14352000" />
     </task>
     <task id="LOCAL-00001" summary="-">
       <created>1684962538502</created>
@@ -118,7 +119,14 @@
       <option name="project" value="LOCAL" />
       <updated>1684967555021</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="- created interface, user auth and handling objects">
+      <created>1685060134671</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1685060134671</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -137,6 +145,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="-" />
-    <option name="LAST_COMMIT_MESSAGE" value="-" />
+    <MESSAGE value="- created interface, user auth and handling objects" />
+    <option name="LAST_COMMIT_MESSAGE" value="- created interface, user auth and handling objects" />
   </component>
 </project>

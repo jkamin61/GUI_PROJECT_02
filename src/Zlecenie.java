@@ -32,7 +32,7 @@ class Zlecenie {
     @Override
     public String toString() {
         return "Zlecenie numer: " + numer +
-                "\nPrace: " + prace.keySet() +
+                "\nPraca: " + prace.keySet() +
                 "\nBrygadzista: " + brygadzista +
                 "\nDziały pracowników: " + dzialyPracownikow.keySet();
     }
