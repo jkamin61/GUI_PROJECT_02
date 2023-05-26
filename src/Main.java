@@ -58,8 +58,6 @@ public class Main {
             watek1.start();
             watek2.start();
             watek3.start();
-
-            // Wyświetlanie informacji o zleceniu
             System.out.println(zlecenie.toString());
 
 
